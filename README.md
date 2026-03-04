@@ -1,4 +1,4 @@
-# File Server
+# Mirra
 
 A simple file server with web UI, similar to university mirror sites. Built with Go using server-side rendering.
 
@@ -11,6 +11,12 @@ A simple file server with web UI, similar to university mirror sites. Built with
 - Server-side rendered directory listing
 - README.md rendering (like GitHub)
 - Statistics (directories, files, total size)
+- Breadcrumb navigation
+- File list with sorting (name, size, modified time)
+- Real-time search filtering
+- SPA-style navigation (no-refresh directory switching)
+- Code block syntax highlighting (Prism.js)
+- Responsive design with mobile support
 
 ## Configuration
 
@@ -29,9 +35,10 @@ Edit `config.json`:
 ```json
 {
   "server": {
-    "name": "File Server",
+    "name": "Mirra",
     "host": "0.0.0.0",
-    "port": "8080"
+    "port": "8080",
+    "favicon": ""
   },
   "share": {
     "root_path": "."
@@ -54,13 +61,19 @@ Edit `config.json`:
 
 ### Prerequisites
 
-- Go 1.22 or later
+- Go 1.25 or later
 
 ### Using Makefile
 
 ```bash
-# Build binary
+# Build binary for current platform
 make build
+
+# Cross-compile for all platforms (linux, darwin, windows)
+make cross-build
+
+# Create distribution packages
+make dist
 
 # Run server
 make run
@@ -68,32 +81,58 @@ make run
 # Format code
 make fmt
 
-# Run tests
-make test
-
 # Lint check
 make lint
-```
 
-The binary `fileserver` will be created in the project root.
+# Clean build artifacts
+make clean
+```
 
 ### Manual Build
 
 ```bash
 # Build Go binary
-go build -o fileserver main.go
+go build -o mirra ./cmd/server
 
 # Run
-./fileserver
+./mirra
+```
+
+## Project Structure
+
+```
+.
+├── cmd/
+│   └── server/
+│       ├── main.go           # Main entry point
+│       └── static/
+│           ├── template.html # HTML template with embedded CSS/JS
+│           ├── css/          # Stylesheets
+│           ├── js/           # JavaScript files
+│           └── webfonts/     # FontAwesome fonts
+├── internal/
+│   ├── config/               # Configuration handling
+│   ├── handlers/             # HTTP handlers
+│   ├── types/                # Type definitions
+│   ├── utils/                # Utility functions
+│   └── version/              # Version information
+├── config.json               # Configuration file
+├── config.example.json       # Example configuration
+├── Makefile                  # Build scripts
+└── go.mod                    # Go module definition
 ```
 
 ## Architecture
 
 The server uses Go's `html/template` for server-side rendering. All HTML, CSS, and JavaScript are embedded in the binary via `go:embed`.
 
-- `main.go` – Main server logic with directory handling and Markdown rendering
-- `template.html` – HTML template with embedded CSS and JavaScript
-- `config.json` – Configuration file
+### Key Components
+
+- `cmd/server/main.go` - Main server logic with directory handling
+- `cmd/server/static/template.html` - HTML template with embedded CSS and JavaScript
+- `internal/config/config.go` - Configuration loading and management
+- `internal/handlers/handlers.go` - HTTP request handlers
+- `internal/utils/utils.go` - Utility functions (size formatting, etc.)
 
 ### Theme System
 
@@ -103,63 +142,62 @@ The UI supports light and dark themes based on CSS custom properties. The theme 
 
 Supported theme values: `light`, `dark`, or `auto` (follows system preference).
 
-## Offline Usage (No Internet Required)
+## Cross-Compilation
 
-This server is designed to work completely offline in internal network environments:
-
-1. **FontAwesome icons are served locally** – No external CDN dependencies
-2. **All web resources are embedded** – CSS, fonts, and scripts are included in the `static/` directory
-
-### Setting Up Local FontAwesome
+The Makefile supports cross-compilation for multiple platforms:
 
 ```bash
-# Download FontAwesome resources
-./download-fontawesome.sh
+# Build for all supported platforms
+make cross-build
 
-# Or manually download from:
-# https://fontawesome.com/download
-# Place the CSS files in static/css/ and font files in static/fonts/
+# Output files will be in dist/ directory:
+# - mirra_linux_amd64
+# - mirra_linux_arm64
+# - mirra_mac_amd64
+# - mirra_mac_arm64
+# - mirra_windows_amd64.exe
 ```
 
-### Static File Structure
-```
-static/
-├── css/
-│   └── font-awesome.min.css    # FontAwesome CSS
-└── fonts/
-    ├── fa-solid-900.woff2      # Solid icons font
-    ├── fa-regular-400.woff2    # Regular icons font
-    └── fa-brands-400.woff2     # Brand icons font
-```
-
-## Building and Distribution
-
-### Makefile Commands
-```bash
-make build          # Build for current platform (output: dist/fileserver)
-make cross-build    # Cross-compile for all platforms
-make dist           # Create distribution packages (.tar.gz/.zip)
-make clean          # Clean build artifacts
-make help           # Show all available commands
-```
-
-### Supported Platforms
-- Linux (amd64, arm64)
+Supported platforms:
+- Linux (amd64, arm64, 386, arm, riscv64)
 - macOS (amd64, arm64)
-- Windows (amd64)
-- FreeBSD (amd64)
+- Windows (amd64, arm64, 386, arm)
 
-### Distribution Packages
-Distribution packages include:
-- The compiled binary
-- `config.example.json`
-- `README.md`
+## Release Script
 
-### GitHub Actions
-CI/CD pipeline is configured in `.github/workflows/build.yml`:
-- Tests on push/PR
-- Cross-compilation for all platforms
-- Automatic release creation when tags are pushed
+Use `release.sh` to manage version tags:
+
+```bash
+# Show current version and create tag
+./release.sh
+
+# Bump major version (1.0.0 -> 2.0.0)
+./release.sh --major
+
+# Bump minor version (1.0.0 -> 1.1.0)
+./release.sh --minor
+
+# Bump patch version (1.0.0 -> 1.0.1)
+./release.sh --patch
+
+# Only create tag without bumping version
+./release.sh --tag-only
+
+# Delete current version tag (local and remote)
+./release.sh --revert
+```
+
+After creating a tag, push it to trigger the GitHub Actions release workflow.
+
+## GitHub Actions
+
+The Release workflow is configured in `.github/workflows/build.yml`:
+
+- **Lint**: Code formatting check
+- **Cross-compile**: Build for all supported platforms
+- **Release**: Create GitHub release with binaries
+
+The workflow triggers automatically when a version tag (e.g., `v0.0.1`) is pushed.
 
 ## Development
 
@@ -167,14 +205,11 @@ CI/CD pipeline is configured in `.github/workflows/build.yml`:
 # Install dependencies
 make deps
 
-# Run tests
-make test
-
 # Format code
 make fmt
 
 # Run with hot reload (using air or similar)
-go run main.go
+go run ./cmd/server
 ```
 
 ## License

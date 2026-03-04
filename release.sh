@@ -9,6 +9,7 @@ CHANGELOG_FILE="CHANGELOG.md"
 # 默认操作：仅打 tag（不修改版本号）
 BUMP_TYPE=""
 TAG_ONLY=false
+REVERT_TAG=false
 
 # 解析参数
 while [[ $# -gt 0 ]]; do
@@ -29,6 +30,10 @@ while [[ $# -gt 0 ]]; do
             TAG_ONLY=true
             shift
             ;;
+        --revert)
+            REVERT_TAG=true
+            shift
+            ;;
         --help)
             echo "Usage: $0 [OPTIONS]"
             echo ""
@@ -37,6 +42,7 @@ while [[ $# -gt 0 ]]; do
             echo "  --minor      Bump minor version and create tag (0.x.0)"
             echo "  --patch      Bump patch version and create tag (0.0.x)"
             echo "  --tag-only   Only create tag with current version (default behavior)"
+            echo "  --revert     Delete current version tag (local and remote)"
             echo "  --help       Show this help message"
             echo ""
             echo "Examples:"
@@ -45,6 +51,7 @@ while [[ $# -gt 0 ]]; do
             echo "  $0 --minor            # Bump to 0.1.0 and tag"
             echo "  $0 --patch            # Bump to 0.0.1 and tag"
             echo "  $0 --tag-only         # Same as default, only tag current version"
+            echo "  $0 --revert           # Delete current version tag (local and remote)"
             exit 0
             ;;
         *)
@@ -64,6 +71,34 @@ fi
 # 提取当前版本号
 CURRENT_VERSION=$(grep 'const BaseVersion' "$VERSION_FILE" | cut -d'"' -f2)
 echo "Current version: ${CURRENT_VERSION}"
+
+# --revert: 删除当前版本的 tag
+if [[ "$REVERT_TAG" == true ]]; then
+    NEW_TAG="v${CURRENT_VERSION}"
+    echo "Reverting tag: ${NEW_TAG}"
+
+    # 检查本地 tag 是否存在
+    if git rev-parse "${NEW_TAG}" >/dev/null 2>&1; then
+        echo "Deleting local tag: ${NEW_TAG}"
+        git tag -d "${NEW_TAG}"
+        echo "Local tag deleted"
+    else
+        echo "Local tag ${NEW_TAG} does not exist"
+    fi
+
+    # 检查远程 tag 是否存在并删除
+    if git ls-remote --tags origin | grep -q "refs/tags/${NEW_TAG}"; then
+        echo "Deleting remote tag: ${NEW_TAG}"
+        git push origin :refs/tags/${NEW_TAG}
+        echo "Remote tag deleted"
+    else
+        echo "Remote tag ${NEW_TAG} does not exist"
+    fi
+
+    echo ""
+    echo "Done! Tag ${NEW_TAG} has been reverted"
+    exit 0
+fi
 
 # 确定新版本号
 if [[ -n "$BUMP_TYPE" ]]; then
@@ -157,10 +192,16 @@ if [[ -f "$CHANGELOG_FILE" ]]; then
     fi
 fi
 
-echo ""
-echo "Done! To push the commit and tag, run:"
-echo "  git push origin main && git push origin ${NEW_TAG}"
-echo ""
+# 推送代码和 tag
+echo "Pushing commit and tag to remote..."
 if [[ -n "$BUMP_TYPE" ]]; then
-    echo "Note: Version was bumped from ${CURRENT_VERSION} to ${NEW_VERSION}"
+    git push origin main
+fi
+git push origin "${NEW_TAG}"
+echo "Push completed successfully"
+
+echo ""
+echo "Done!"
+if [[ -n "$BUMP_TYPE" ]]; then
+    echo "Version bumped from ${CURRENT_VERSION} to ${NEW_VERSION}"
 fi

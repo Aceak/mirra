@@ -8,22 +8,22 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [0.0.1] - 2026-03-04
 
 ### Added
-- 第一个正式版本
-- 单二进制部署，无需额外依赖
-- GitHub 风格亮/暗主题支持，可跟随系统偏好
-- 目录列表显示，带文件类型图标
-- README.md 渲染（类似 GitHub）
-- 面包屑导航
-- 统计信息显示（目录数、文件数、总大小）
-- 文件列表可排序（名称、大小、修改时间）
-- 实时搜索过滤
-- SPA 风格导航（无刷新切换目录）
-- 代码块语法高亮（Prism.js 本地化）
-- 响应式设计，支持移动端
+- Initial stable release
+- Single binary deployment, no additional dependencies required
+- GitHub-style light/dark theme support with system preference detection
+- Directory listing with file type icons
+- README.md rendering (GitHub-like)
+- Breadcrumb navigation
+- Statistics display (directory count, file count, total size)
+- Sortable file list (name, size, modified time)
+- Real-time search filtering
+- SPA-style navigation (no-refresh directory switching)
+- Code block syntax highlighting (Prism.js localized)
+- Responsive design with mobile support
 
 ### Changed
-- 重构项目结构，使用 Go 标准布局（cmd/, internal/）
-- 分离 template.html 中的 CSS 和 JS 到独立文件
-- 所有静态资源本地化，不再依赖 CDN
-- 优化 SPA 导航逻辑，支持所有目录链接
-- 优化 README 区域动态渲染逻辑
+- Refactored project structure to Go standard layout (cmd/, internal/)
+- Separated CSS and JS from template.html into standalone files
+- All static resources localized, no CDN dependencies
+- Optimized SPA navigation logic to support all directory links
+- Optimized README area dynamic rendering logic
