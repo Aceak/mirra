@@ -1,18 +1,17 @@
 # Go parameters
-BINARY_NAME = fileserver
-BASE_VERSION := $(shell grep 'const baseVersion' version.go | cut -d'"' -f2)
-BUILD_ID ?= $(shell date -u '+%s')
-BUILD_TIME = $(shell date -u '+%Y-%m-%d_%H:%M:%S')
+BINARY_NAME = mirra
+BASE_VERSION := $(shell grep 'const BaseVersion' internal/version/version.go | cut -d'"' -f2)
 COMMIT_HASH = $(shell git rev-parse --short HEAD 2>/dev/null || echo "unknown")
-VERSION = $(BASE_VERSION).$(BUILD_ID)
-GO_FLAGS = -ldflags="-s -w -X main.version=$(VERSION) -X main.commitHash=$(COMMIT_HASH) -X main.buildTime=$(BUILD_TIME)"
+GO_FLAGS = -ldflags="-s -w -X github.com/Aceak/mirra/internal/version.CommitHash=$(COMMIT_HASH)"
 GO_CMD = go
 GO_BUILD = $(GO_CMD) build $(GO_FLAGS)
 GO_TEST = $(GO_CMD) test
 GO_FMT = $(GO_CMD) fmt
 
 # Platforms to cross-compile for
-PLATFORMS = linux/amd64 linux/arm64 darwin/amd64 darwin/arm64 windows/amd64 freebsd/amd64
+# OS: linux, mac (darwin), windows
+# Arch: 386 (x86), amd64 (x86_64), arm (ARM 32-bit), arm64 (ARM 64-bit), riscv64 (RISC-V)
+PLATFORMS = linux/386 linux/amd64 linux/arm linux/arm64 linux/riscv64 darwin/amd64 darwin/arm64 windows/386 windows/amd64 windows/arm windows/arm64
 
 # Default target
 .PHONY: all
@@ -22,7 +21,8 @@ all: build
 .PHONY: build
 build:
 	@mkdir -p dist
-	$(GO_BUILD) -o dist/$(BINARY_NAME) .
+	@echo "Building $(BINARY_NAME)..."
+	@$(GO_BUILD) -o dist/$(BINARY_NAME) ./cmd/server
 	@echo "Binary built: dist/$(BINARY_NAME)"
 
 # Run the application
@@ -38,57 +38,76 @@ test:
 # Run tests with coverage
 .PHONY: test-cover
 test-cover:
-	$(GO_TEST) ./... -coverprofile=coverage.out
-	$(GO_CMD) tool cover -html=coverage.out -o coverage.html
+	@echo "Running tests with coverage..."
+	@$(GO_TEST) ./... -coverprofile=coverage.out
+	@$(GO_CMD) tool cover -html=coverage.out -o coverage.html
+	@echo "Coverage report: coverage.html"
 
 # Format code
 .PHONY: fmt
 fmt:
-	$(GO_FMT) ./...
+	@echo "Formatting code..."
+	@$(GO_FMT) ./...
+	@echo "Code formatted"
 
 # Lint code
 .PHONY: lint
 lint:
-	gofmt -d .
+	@gofmt -d .
 	# Add golangci-lint or other linters as needed
 
 # Clean build artifacts
 .PHONY: clean
 clean:
-	rm -f $(BINARY_NAME) $(BINARY_NAME)-*.tar.gz $(BINARY_NAME)-*.zip coverage.out coverage.html
-	rm -rf dist/
+	@echo "Cleaning build artifacts..."
+	@rm -f $(BINARY_NAME) $(BINARY_NAME)-*.tar.gz $(BINARY_NAME)-*.zip mirra_*.tar.gz mirra_*.zip mirra_* coverage.out coverage.html
+	@rm -rf dist/
+	@echo "Clean complete"
 
 # Install dependencies
 .PHONY: deps
 deps:
-	$(GO_CMD) mod download
-	$(GO_CMD) mod tidy
+	@echo "Downloading dependencies..."
+	@$(GO_CMD) mod download
+	@$(GO_CMD) mod tidy
+	@echo "Dependencies ready"
 
 # Cross-compile for all platforms
 .PHONY: cross-build
 cross-build: deps
 	@echo "Building for multiple platforms..."
+	@mkdir -p dist
 	@for platform in $(PLATFORMS); do \
 		GOOS=$${platform%/*}; \
 		GOARCH=$${platform#*/}; \
-		output_name=dist/$(BINARY_NAME)-$${GOOS}-$${GOARCH}; \
+		if [ "$${GOOS}" = "darwin" ]; then \
+			OS_NAME="mac"; \
+		else \
+			OS_NAME="$${GOOS}"; \
+		fi; \
+		output_name=dist/mirra_$${OS_NAME}_$${GOARCH}; \
 		if [ "$${GOOS}" = "windows" ]; then \
 			output_name=$${output_name}.exe; \
 		fi; \
 		echo "Building $${output_name}..."; \
-		GOOS=$${GOOS} GOARCH=$${GOARCH} $(GO_BUILD) -o $${output_name} .; \
+		GOOS=$${GOOS} GOARCH=$${GOARCH} $(GO_BUILD) -o $${output_name} ./cmd/server; \
 	done
+	@echo "All builds completed"
 
 # Create distribution packages
 .PHONY: dist
 dist: clean cross-build
 	@echo "Creating distribution packages..."
-	@mkdir -p dist
 	@for platform in $(PLATFORMS); do \
 		GOOS=$${platform%/*}; \
 		GOARCH=$${platform#*/}; \
-		output_name=dist/$(BINARY_NAME)-$${GOOS}-$${GOARCH}; \
-		archive_name=dist/$(BINARY_NAME)-$(VERSION)-$${GOOS}-$${GOARCH}; \
+		if [ "$${GOOS}" = "darwin" ]; then \
+			OS_NAME="mac"; \
+		else \
+			OS_NAME="$${GOOS}"; \
+		fi; \
+		output_name=dist/mirra_$${OS_NAME}_$${GOARCH}; \
+		archive_name=dist/mirra_$${OS_NAME}_$${GOARCH}; \
 		if [ "$${GOOS}" = "windows" ]; then \
 			output_name=$${output_name}.exe; \
 			cp $${output_name} $(BINARY_NAME).exe; \
@@ -102,7 +121,7 @@ dist: clean cross-build
 		rm -f $${output_name}; \
 		echo "Created $${archive_name}.tar.gz/zip"; \
 	done
-	@echo "Distribution packages created in dist/ directory"
+	@echo "Distribution packages created in dist/"
 
 # Show help
 .PHONY: help
@@ -120,10 +139,3 @@ help:
 	@echo "  cross-build - Cross-compile for multiple platforms"
 	@echo "  dist        - Create distribution packages"
 	@echo "  help        - Show this help message"
-
-# Add version information to the binary
-.PHONY: version
-version:
-	@echo "Version: $(VERSION)"
-	@echo "Commit: $(COMMIT_HASH)"
-	@echo "Build Time: $(BUILD_TIME)"

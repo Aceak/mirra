@@ -1,28 +1,64 @@
-package main
+package utils
 
 import (
 	"fmt"
+	"html"
+	"io"
 	"path/filepath"
 	"strings"
 
+	markdownhtml "github.com/gomarkdown/markdown/html"
 	"github.com/gomarkdown/markdown"
-	"github.com/gomarkdown/markdown/html"
+	"github.com/gomarkdown/markdown/ast"
 	"github.com/gomarkdown/markdown/parser"
 )
 
-func renderMarkdown(content []byte) string {
+// RenderMarkdown 将 Markdown 内容渲染为 HTML
+func RenderMarkdown(content []byte) string {
 	extensions := parser.CommonExtensions | parser.AutoHeadingIDs
 	p := parser.NewWithExtensions(extensions)
 	doc := p.Parse(content)
 
-	htmlFlags := html.CommonFlags | html.HrefTargetBlank
-	opts := html.RendererOptions{Flags: htmlFlags}
-	renderer := html.NewRenderer(opts)
+	htmlFlags := markdownhtml.CommonFlags | markdownhtml.HrefTargetBlank
+	opts := markdownhtml.RendererOptions{
+		Flags: htmlFlags,
+		RenderNodeHook: renderCodeBlock,
+	}
+	renderer := markdownhtml.NewRenderer(opts)
 
 	return string(markdown.Render(doc, renderer))
 }
 
-func getIconClass(filename string, isDir bool) string {
+// renderCodeBlock 渲染代码块，添加语言类名供 prism.js 高亮
+func renderCodeBlock(w io.Writer, node ast.Node, entering bool) (ast.WalkStatus, bool) {
+	codeBlock, ok := node.(*ast.CodeBlock)
+	if !ok {
+		return ast.WalkStatus(0), false
+	}
+
+	if entering {
+		var lang string
+		if codeBlock.Info != nil {
+			lang = strings.TrimSpace(string(codeBlock.Info))
+		}
+		if lang == "" {
+			lang = "plaintext"
+		}
+
+		// 写入 pre 标签，添加 language-前缀供 prism.js 使用
+		fmt.Fprintf(w, "<pre class=\"language-%s\"><code class=\"language-%s\">", lang, lang)
+
+		// 转义并写入代码内容
+		escaped := html.EscapeString(string(codeBlock.Literal))
+		w.Write([]byte(escaped))
+		fmt.Fprint(w, "</code></pre>")
+	}
+
+	return ast.SkipChildren, true
+}
+
+// GetIconClass 根据文件名获取图标类名
+func GetIconClass(filename string, isDir bool) string {
 	if isDir {
 		return "fas fa-folder"
 	}
@@ -69,7 +105,8 @@ func getIconClass(filename string, isDir bool) string {
 	}
 }
 
-func formatSize(size int64) string {
+// FormatSize 格式化文件大小
+func FormatSize(size int64) string {
 	if size == 0 {
 		return "-"
 	}

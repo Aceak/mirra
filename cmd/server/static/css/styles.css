@@ -1,0 +1,647 @@
+/* 主题变量定义 */
+body {
+    /* 默认主题 (暗色) */
+    --bg-primary: #0d1117;
+    --bg-secondary: #161b22;
+    --bg-tertiary: #21262d;
+    --text-primary: #e6edf3;
+    --text-secondary: #8b949e;
+    --accent: #58a6ff;
+    --accent-light: #79b8ff;
+    --border: #30363d;
+    --dir-icon: #58a6ff;
+    --file-icon: #e6edf3;
+    --heart: #f85149;
+}
+
+html.light-theme body,
+html.light-theme-initial body {
+    /* GitHub 亮色主题 */
+    --bg-primary: #ffffff;
+    --bg-secondary: #f6f8fa;
+    --bg-tertiary: #eaeef2;
+    --text-primary: #24292f;
+    --text-secondary: #57606a;
+    --accent: #0969da;
+    --accent-light: #1f883d;
+    --border: #d0d7de;
+    --dir-icon: #0969da;
+    --file-icon: #24292f;
+    --heart: #cf222e;
+}
+
+/* 代码块行内元素样式 - 暗色主题（GitHub Dark 风格） */
+.readme-content pre[class*="language-"] code .token.comment,
+.readme-content pre[class*="language-"] code .token.prolog,
+.readme-content pre[class*="language-"] code .token.doctype,
+.readme-content pre[class*="language-"] code .token.cdata {
+    color: #8b949e !important;
+}
+
+.readme-content pre[class*="language-"] code .token.punctuation {
+    color: #8b949e !important;
+}
+
+.readme-content pre[class*="language-"] code .token.property,
+.readme-content pre[class*="language-"] code .token.tag,
+.readme-content pre[class*="language-"] code .token.boolean,
+.readme-content pre[class*="language-"] code .token.number,
+.readme-content pre[class*="language-"] code .token.constant,
+.readme-content pre[class*="language-"] code .token.symbol,
+.readme-content pre[class*="language-"] code .token.deleted {
+    color: #79c0ff !important;
+}
+
+.readme-content pre[class*="language-"] code .token.selector,
+.readme-content pre[class*="language-"] code .token.attr-name,
+.readme-content pre[class*="language-"] code .token.string,
+.readme-content pre[class*="language-"] code .token.char,
+.readme-content pre[class*="language-"] code .token.builtin,
+.readme-content pre[class*="language-"] code .token.inserted {
+    color: #a5d6ff !important;
+}
+
+.readme-content pre[class*="language-"] code .token.operator,
+.readme-content pre[class*="language-"] code .token.entity,
+.readme-content pre[class*="language-"] code .token.url,
+.readme-content pre[class*="language-"] code.language-css .token.string {
+    color: #79c0ff !important;
+}
+
+.readme-content pre[class*="language-"] code .token.atrule,
+.readme-content pre[class*="language-"] code .token.attr-value,
+.readme-content pre[class*="language-"] code .token.keyword {
+    color: #ff7b72 !important;
+}
+
+.readme-content pre[class*="language-"] code .token.function,
+.readme-content pre[class*="language-"] code .token.class-name {
+    color: #d2a8ff !important;
+}
+
+.readme-content pre[class*="language-"] code .token.regex,
+.readme-content pre[class*="language-"] code .token.important,
+.readme-content pre[class*="language-"] code .token.variable {
+    color: #ffa657 !important;
+}
+
+/* 亮色主题下的代码高亮颜色（GitHub Light 风格） */
+html.light-theme .readme-content pre[class*="language-"] code .token.comment,
+html.light-theme .readme-content pre[class*="language-"] code .token.prolog,
+html.light-theme .readme-content pre[class*="language-"] code .token.doctype,
+html.light-theme .readme-content pre[class*="language-"] code .token.cdata {
+    color: #6e7781 !important;
+}
+
+html.light-theme .readme-content pre[class*="language-"] code .token.punctuation {
+    color: #6e7781 !important;
+}
+
+html.light-theme .readme-content pre[class*="language-"] code .token.property,
+html.light-theme .readme-content pre[class*="language-"] code .token.tag,
+html.light-theme .readme-content pre[class*="language-"] code .token.boolean,
+html.light-theme .readme-content pre[class*="language-"] code .token.number,
+html.light-theme .readme-content pre[class*="language-"] code .token.constant,
+html.light-theme .readme-content pre[class*="language-"] code .token.symbol,
+html.light-theme .readme-content pre[class*="language-"] code .token.deleted {
+    color: #0550ae !important;
+}
+
+html.light-theme .readme-content pre[class*="language-"] code .token.selector,
+html.light-theme .readme-content pre[class*="language-"] code .token.attr-name,
+html.light-theme .readme-content pre[class*="language-"] code .token.string,
+html.light-theme .readme-content pre[class*="language-"] code .token.char,
+html.light-theme .readme-content pre[class*="language-"] code .token.builtin,
+html.light-theme .readme-content pre[class*="language-"] code .token.inserted {
+    color: #0a3069 !important;
+}
+
+html.light-theme .readme-content pre[class*="language-"] code .token.operator,
+html.light-theme .readme-content pre[class*="language-"] code .token.entity,
+html.light-theme .readme-content pre[class*="language-"] code .token.url,
+html.light-theme .readme-content pre[class*="language-"] code.language-css .token.string {
+    color: #0550ae !important;
+}
+
+html.light-theme .readme-content pre[class*="language-"] code .token.atrule,
+html.light-theme .readme-content pre[class*="language-"] code .token.attr-value,
+html.light-theme .readme-content pre[class*="language-"] code .token.keyword {
+    color: #cf222e !important;
+}
+
+html.light-theme .readme-content pre[class*="language-"] code .token.function,
+html.light-theme .readme-content pre[class*="language-"] code .token.class-name {
+    color: #8250df !important;
+}
+
+html.light-theme .readme-content pre[class*="language-"] code .token.regex,
+html.light-theme .readme-content pre[class*="language-"] code .token.important,
+html.light-theme .readme-content pre[class*="language-"] code .token.variable {
+    color: #953800 !important;
+}
+
+/* 基础样式重置 */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif;
+    background-color: var(--bg-primary);
+    color: var(--text-primary);
+    line-height: 1.5;
+    min-height: 100vh;
+    overflow-y: scroll;
+    /* 始终显示滚动条，防止布局偏移 */
+}
+
+/* 主题初始化后启用过渡效果 */
+html.theme-initialized body {
+    transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+.container {
+    max-width: 1200px;
+    width: 100%;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+/* 头部样式 */
+.header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px 0;
+    border-bottom: 1px solid var(--border);
+    margin-bottom: 24px;
+}
+
+.server-info {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.server-name {
+    font-size: 20px;
+    font-weight: 600;
+}
+
+.theme-toggle {
+    background: none;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    color: var(--text-primary);
+    cursor: pointer;
+    padding: 8px 16px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    transition: all 0.2s ease;
+}
+
+.theme-toggle:hover {
+    background-color: var(--bg-secondary);
+}
+
+/* 面包屑导航 */
+.breadcrumbs {
+    display: block;
+    margin: 0 0 20px 0;
+    padding: 0;
+    text-align: left;
+    min-height: 22px;
+}
+
+.breadcrumb-link {
+    color: var(--text-primary);
+    text-decoration: none;
+    font-size: 14px;
+    padding: 4px 0px;
+    transition: color 0.2s ease;
+    display: inline-block;
+    vertical-align: middle;
+    line-height: 1;
+    margin: 0;
+    font-family: Consolas, "Microsoft YaHei", monospace;
+}
+
+.breadcrumb-link:hover {
+    color: var(--text-primary);
+    text-decoration: none;
+}
+
+.breadcrumb-separator {
+    color: var(--text-secondary);
+    font-size: 14px;
+}
+
+.breadcrumb-current {
+    color: var(--text-primary);
+    font-size: 14px;
+    padding: 4px 0px;
+    display: inline-block;
+    vertical-align: middle;
+    line-height: 1;
+    margin: 0;
+    font-family: Consolas, "Microsoft YaHei", monospace;
+}
+
+/* 统计信息 */
+.stats {
+    background-color: var(--bg-secondary);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 12px 16px;
+    margin-bottom: 20px;
+    font-size: 13px;
+    color: var(--text-secondary);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.stats-left {
+    white-space: nowrap;
+    font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace;
+}
+
+.stats-right {
+    white-space: nowrap;
+    font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace;
+    font-size: 13px;
+}
+
+/* 文件列表表格 */
+.file-table {
+    width: 100%;
+    border-collapse: collapse;
+    background-color: var(--bg-secondary);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    overflow: hidden;
+    margin-bottom: 20px;
+}
+
+.file-table th {
+    background-color: var(--bg-tertiary);
+    text-align: left;
+    padding: 12px 16px;
+    font-weight: 700;
+    font-size: 14px;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--text-primary);
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif;
+    border-bottom: 1px solid var(--border);
+    vertical-align: middle;
+}
+
+/* 表格列宽度 */
+th:first-child {
+    width: 50%;
+    padding: 10px 16px;
+}
+
+th:first-child .th-wrapper {
+    display: flex;
+    align-items: center;
+    gap: 24px;
+}
+
+th:first-child .th-title {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    cursor: pointer;
+    white-space: nowrap;
+}
+
+th:first-child .search-box {
+    flex-shrink: 0;
+}
+
+th.file-size {
+    width: 10%;
+}
+
+th.file-modified {
+    width: 12%;
+    text-align: left;
+    padding-right: 0px;
+}
+
+.file-table th.sortable {
+    cursor: pointer;
+    user-select: none;
+}
+
+.file-table th.sortable:hover {
+    background-color: var(--bg-tertiary);
+}
+
+.sort-icon {
+    margin-left: 6px;
+    opacity: 0.3;
+}
+
+.file-table th.sortable:hover .sort-icon {
+    opacity: 0.6;
+}
+
+.file-table th.sorted .sort-icon {
+    opacity: 1;
+}
+
+/* 排序标题文字 */
+.th-title {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    cursor: pointer;
+    vertical-align: middle;
+}
+
+/* 搜索框样式 */
+.search-box {
+    position: relative;
+    width: 180px;
+}
+
+.search-input {
+    width: 100%;
+    padding: 8px 10px 8px 32px;
+    font-size: 13px;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    background-color: var(--bg-primary);
+    color: var(--text-primary);
+    outline: none;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+    font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace;
+    box-sizing: border-box;
+}
+
+.search-input:focus {
+    border-color: var(--accent);
+    box-shadow: 0 0 0 3px rgba(88, 166, 255, 0.1);
+}
+
+.search-input::placeholder {
+    color: var(--text-secondary);
+    font-size: 12px;
+}
+
+.search-icon {
+    position: absolute;
+    left: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--text-secondary);
+    font-size: 12px;
+    pointer-events: none;
+}
+
+/* 表格单元格 */
+.file-table td {
+    padding: 12px 16px;
+    border-bottom: 1px solid var(--border);
+}
+
+.file-table tr:last-child td {
+    border-bottom: none;
+}
+
+.file-table tr:hover {
+    background-color: var(--bg-tertiary);
+}
+
+.file-link {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    color: var(--text-primary);
+    text-decoration: none;
+    transition: color 0.2s ease;
+}
+
+.file-link:hover {
+    color: var(--accent);
+}
+
+.file-icon {
+    width: 20px;
+    text-align: center;
+    color: var(--dir-icon);
+}
+
+.file-icon.file {
+    color: var(--file-icon);
+}
+
+.file-name {
+    flex: 1;
+}
+
+.file-size {
+    text-align: left;
+    color: var(--text-secondary);
+    font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace;
+    font-size: 13px;
+}
+
+.file-modified {
+    text-align: left;
+    color: var(--text-secondary);
+    font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace;
+    font-size: 13px;
+    padding-right: 0;
+}
+
+/* 表格标题样式 */
+th.file-size {
+    text-align: left;
+    padding-right: 24px;
+}
+
+th.file-modified {
+    text-align: left;
+    padding-right: 0;
+}
+
+/* 空目录 */
+.empty-directory {
+    text-align: center;
+    padding: 40px 20px;
+    color: var(--text-secondary);
+}
+
+.empty-icon {
+    font-size: 48px;
+    margin-bottom: 16px;
+    opacity: 0.5;
+}
+
+/* README 预览 */
+.readme-container {
+    margin-top: 40px;
+    border-top: 1px solid var(--border);
+    padding-top: 24px;
+}
+
+.readme-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 16px;
+}
+
+.readme-title {
+    font-size: 18px;
+    font-weight: 600;
+    color: var(--text-primary);
+}
+
+.readme-content {
+    background-color: var(--bg-secondary);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 24px;
+}
+
+.readme-content h1,
+.readme-content h2,
+.readme-content h3,
+.readme-content h4,
+.readme-content h5,
+.readme-content h6 {
+    margin-top: 24px;
+    margin-bottom: 16px;
+    color: var(--text-primary);
+}
+
+.readme-content h1 {
+    border-bottom: 1px solid var(--border);
+    padding-bottom: 8px;
+}
+
+.readme-content p {
+    margin-bottom: 16px;
+    line-height: 1.6;
+}
+
+.readme-content code {
+    background-color: var(--bg-tertiary);
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace;
+    font-size: 13px;
+}
+
+.readme-content pre {
+    background-color: var(--bg-tertiary);
+    padding: 16px;
+    border-radius: 6px;
+    overflow-x: auto;
+    margin-bottom: 16px;
+    position: relative;
+    padding-top: 36px;
+}
+
+.readme-content pre code {
+    background: none;
+    padding: 0;
+    font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace;
+    font-size: 13px;
+    line-height: 1.5;
+}
+
+/* 代码块复制按钮 */
+.code-copy-btn {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    padding: 4px 8px;
+    font-size: 12px;
+    background-color: var(--bg-secondary);
+    color: var(--text-primary);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    z-index: 10;
+}
+
+.code-copy-btn:hover {
+    background-color: var(--bg-tertiary);
+    border-color: var(--accent);
+}
+
+.code-copy-btn.copied {
+    background-color: var(--accent-light);
+    border-color: var(--accent-light);
+    color: #fff;
+}
+
+.readme-content ul,
+.readme-content ol {
+    margin-bottom: 16px;
+    padding-left: 24px;
+}
+
+.readme-content li {
+    margin-bottom: 4px;
+}
+
+.readme-content a {
+    color: var(--accent);
+    text-decoration: none;
+}
+
+.readme-content a:hover {
+    text-decoration: underline;
+}
+
+/* 页脚 */
+.footer {
+    margin-top: 40px;
+    padding-top: 20px;
+    border-top: 1px solid var(--border);
+    text-align: center;
+    color: var(--text-secondary);
+    font-size: 14px;
+}
+
+.footer-heart {
+    color: var(--heart);
+    margin: 0 4px;
+}
+
+/* 响应式设计 */
+@media (max-width: 768px) {
+    .container {
+        padding: 12px;
+    }
+
+    .header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 16px;
+    }
+
+    .file-table th,
+    .file-table td {
+        padding: 8px 12px;
+    }
+
+    .file-modified {
+        display: none;
+    }
+
+    .readme-content {
+        padding: 16px;
+    }
+}

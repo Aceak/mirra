@@ -1,4 +1,4 @@
-package main
+package config
 
 import (
 	"encoding/json"
@@ -15,9 +15,10 @@ type Config struct {
 
 // ServerConfig 服务器配置
 type ServerConfig struct {
-	Name string `json:"name"`
-	Host string `json:"host"`
-	Port string `json:"port"`
+	Name    string `json:"name"`
+	Host    string `json:"host"`
+	Port    string `json:"port"`
+	Favicon string `json:"favicon"`
 }
 
 // ShareConfig 共享配置
@@ -33,7 +34,8 @@ type AppearanceConfig struct {
 
 var config Config
 
-func loadConfig() error {
+// LoadConfig 加载配置文件并返回 Config 实例
+func LoadConfig() (*Config, error) {
 	// 如果配置文件不存在，创建默认配置
 	if _, err := os.Stat("config.json"); os.IsNotExist(err) {
 		fmt.Println("config.json not found, creating default configuration...")
@@ -46,9 +48,10 @@ func loadConfig() error {
 
 		defaultConfig := Config{
 			Server: ServerConfig{
-				Name: "File Server",
-				Host: "0.0.0.0",
-				Port: "8080",
+				Name:    "Mirra",
+				Host:    "0.0.0.0",
+				Port:    "8080",
+				Favicon: "",
 			},
 			Share: ShareConfig{
 				RootPath: cwd,
@@ -62,14 +65,14 @@ func loadConfig() error {
 		// 写入默认配置
 		file, err := os.Create("config.json")
 		if err != nil {
-			return fmt.Errorf("failed to create config.json: %v", err)
+			return nil, fmt.Errorf("failed to create config.json: %v", err)
 		}
 		defer file.Close()
 
 		encoder := json.NewEncoder(file)
 		encoder.SetIndent("", "  ")
 		if encodeErr := encoder.Encode(defaultConfig); encodeErr != nil {
-			return fmt.Errorf("failed to write default config: %v", encodeErr)
+			return nil, fmt.Errorf("failed to write default config: %v", encodeErr)
 		}
 
 		fmt.Printf("Default config.json created with root path: %s\n", cwd)
@@ -77,21 +80,27 @@ func loadConfig() error {
 		// 重新打开文件进行读取
 		file, err = os.Open("config.json")
 		if err != nil {
-			return err
+			return nil, err
 		}
 		defer file.Close()
 
 		decoder := json.NewDecoder(file)
-		return decoder.Decode(&config)
+		if decodeErr := decoder.Decode(&config); decodeErr != nil {
+			return nil, decodeErr
+		}
+		return &config, nil
 	}
 
 	// 配置文件存在，正常加载
 	file, err := os.Open("config.json")
 	if err != nil {
-		return err
+		return nil, err
 	}
 	defer file.Close()
 
 	decoder := json.NewDecoder(file)
-	return decoder.Decode(&config)
+	if err := decoder.Decode(&config); err != nil {
+		return nil, err
+	}
+	return &config, nil
 }

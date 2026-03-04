@@ -1,4 +1,4 @@
-module fileserver
+module github.com/Aceak/mirra
 
 go 1.25.6
 

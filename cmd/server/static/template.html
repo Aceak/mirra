@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{.PageTitle}}</title>
+    {{if .ServerFavicon}}
+    <link rel="icon" href="{{.ServerFavicon}}">{{end}}
+    <link rel="stylesheet" href="/static/css/font-awesome.min.css">
+    <link rel="stylesheet" href="/static/css/styles.css">
+    <script src="/static/js/prism.min.js"></script>
+    <script src="/static/js/prism-autoloader.min.js" data-autoloader-path="/static/js/components/"></script>
+    <script>document.title="{{.PageTitle}}";</script>
+    <script src="/static/js/main.js"></script>
+</head>
+
+<body>
+    <div class="container">
+        <!-- 头部 -->
+        <header class="header">
+            <div class="server-info">
+                <h1 class="server-name">{{.ServerName}}</h1>
+            </div>
+            <button class="theme-toggle" id="themeToggle">
+                <i class="fas fa-moon" id="themeIcon"></i>
+                <span id="themeText">Dark</span>
+            </button>
+        </header>
+
+        <!-- 面包屑导航 -->
+        <nav class="breadcrumbs">
+            {{if .Breadcrumbs}}
+            {{range $index, $crumb := .Breadcrumbs}}
+            {{if $crumb.Last}}
+            {{if eq $crumb.Path "."}}
+            <span class="breadcrumb-current">/</span>
+            {{else}}
+            <span class="breadcrumb-current"> {{$crumb.Name}} / </span>
+            {{end}}
+            {{else}}
+            {{if eq $crumb.Path "."}}
+            <a href="/" class="breadcrumb-link">/</a>
+            {{else}}
+            <a href="/{{$crumb.Path}}" class="breadcrumb-link"> {{$crumb.Name}} / </a>
+            {{end}}
+            {{end}}
+            {{end}}
+            {{else}}
+            <span class="breadcrumb-current">Home</span>
+            {{end}}
+        </nav>
+
+        <!-- 统计信息 -->
+        <div class="stats">
+            <span class="stats-left">
+                {{.Stats.Directories}} directories, {{.Stats.Files}} files, {{.Stats.TotalSize}} total
+            </span>
+            {{if .LatestModTime}}
+            <span class="stats-right">
+                Last Update: {{.LatestModTime}}
+            </span>
+            {{end}}
+        </div>
+
+        <!-- 文件列表 -->
+        {{if ne .Path "."}}
+        <table class="file-table">
+            <thead>
+                <tr>
+                    <th class="sortable" data-sort="name" data-order="{{.SortOrder}}" data-sort-by="name">
+                        <div class="th-wrapper">
+                            <span class="th-title">Name<i class="sort-icon fas fa-sort"></i></span>
+                            <div class="search-box">
+                                <i class="fas fa-search search-icon"></i>
+                                <input type="text" class="search-input" id="searchInput" placeholder="Search" />
+                            </div>
+                        </div>
+                    </th>
+                    <th class="file-size sortable" data-sort="size" data-order="{{.SortOrder}}" data-sort-by="size">
+                        <span class="th-title">Size<i class="sort-icon fas fa-sort"></i></span>
+                    </th>
+                    <th class="file-modified sortable" data-order="{{.SortOrder}}" data-sort-by="modified">
+                        <span class="th-title">Modified<i class="sort-icon fas fa-sort"></i></span>
+                    </th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr class="parent-dir-row">
+                    <td>
+                        <a href=".." class="file-link">
+                            <i class="fas fa-level-up-alt file-icon"></i>
+                            <span class="file-name">..</span>
+                        </a>
+                    </td>
+                    <td class="file-size">-</td>
+                    <td class="file-modified">-</td>
+                </tr>
+                {{if .Items}}
+                {{range .Items}}
+                <tr>
+                    <td>
+                        <a href="/{{.Path}}{{if .IsDirectory}}/{{end}}" class="file-link">
+                            <i class="{{.IconClass}} file-icon {{if not .IsDirectory}}file{{end}}"></i>
+                            <span class="file-name">{{.Name}}{{if .IsDirectory}}/{{end}}</span>
+                        </a>
+                    </td>
+                    <td class="file-size">{{.SizeHuman}}</td>
+                    <td class="file-modified">{{.Modified}}</td>
+                </tr>
+                {{end}}
+                {{else}}
+                <tr>
+                    <td colspan="3" class="empty-directory-cell">
+                        <div style="text-align: center; padding: 20px; color: var(--text-secondary);">
+                            <i class="fas fa-folder-open"
+                                style="font-size: 24px; margin-bottom: 8px; opacity: 0.5;"></i>
+                            <p>This directory is empty</p>
+                        </div>
+                    </td>
+                </tr>
+                {{end}}
+            </tbody>
+        </table>
+        {{else}}
+        {{if .Items}}
+        <table class="file-table">
+            <thead>
+                <tr>
+                    <th class="sortable" data-sort="name" data-order="{{.SortOrder}}" data-sort-by="name">
+                        <div class="th-wrapper">
+                            <span class="th-title">Name<i class="sort-icon fas fa-sort"></i></span>
+                            <div class="search-box">
+                                <i class="fas fa-search search-icon"></i>
+                                <input type="text" class="search-input" id="searchInput" placeholder="Search" />
+                            </div>
+                        </div>
+                    </th>
+                    <th class="file-size sortable" data-sort="size" data-order="{{.SortOrder}}" data-sort-by="size">
+                        <span class="th-title">Size<i class="sort-icon fas fa-sort"></i></span>
+                    </th>
+                    <th class="file-modified sortable" data-order="{{.SortOrder}}" data-sort-by="modified">
+                        <span class="th-title">Modified<i class="sort-icon fas fa-sort"></i></span>
+                    </th>
+                </tr>
+            </thead>
+            <tbody>
+                {{range .Items}}
+                <tr>
+                    <td>
+                        <a href="/{{.Path}}{{if .IsDirectory}}/{{end}}" class="file-link">
+                            <i class="{{.IconClass}} file-icon {{if not .IsDirectory}}file{{end}}"></i>
+                            <span class="file-name">{{.Name}}{{if .IsDirectory}}/{{end}}</span>
+                        </a>
+                    </td>
+                    <td class="file-size">{{.SizeHuman}}</td>
+                    <td class="file-modified">{{.Modified}}</td>
+                </tr>
+                {{end}}
+            </tbody>
+        </table>
+        {{else}}
+        <div class="empty-directory">
+            <i class="fas fa-folder-open empty-icon"></i>
+            <p>This directory is empty</p>
+        </div>
+        {{end}}
+        {{end}}
+
+        <!-- README 预览 -->
+        {{if .HasReadme}}
+        <div class="readme-container">
+            <div class="readme-header">
+                <h2 class="readme-title">README.md</h2>
+            </div>
+            <div class="readme-content">
+                {{.ReadmeHTML}}
+            </div>
+        </div>
+        {{end}}
+
+        <!-- 页脚 -->
+        <footer class="footer">
+            <p>Powered by <i class="fas fa-heart footer-heart"></i> Mirra</p>
+        </footer>
+    </div>
+</body>
+
+</html>

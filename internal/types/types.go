@@ -1,4 +1,4 @@
-package main
+package types
 
 import "html/template"
 
@@ -15,15 +15,19 @@ type FileItem struct {
 
 // PageData 页面数据
 type PageData struct {
-	ServerName   string
-	Path         string
-	Items        []FileItem
-	HasReadme    bool
-	ReadmeHTML   template.HTML
-	Stats        Stats
-	IsDarkTheme  bool
-	ShowHidden   bool
-	Breadcrumbs  []Breadcrumb
+	ServerName    string
+	ServerFavicon string
+	PageTitle     string
+	Path          string
+	Items         []FileItem
+	HasReadme     bool
+	ReadmeHTML    template.HTML
+	Stats         Stats
+	IsDarkTheme   bool
+	ShowHidden    bool
+	Breadcrumbs   []Breadcrumb
+	SortOrder     string
+	LatestModTime string
 }
 
 // Stats 统计信息

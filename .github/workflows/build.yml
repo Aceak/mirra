@@ -3,7 +3,7 @@ name: CI/CD
 on:
   push:
     branches: [ main, master ]
-    tags: [ 'v*' ]
+    tags: [ '[0-9]+.[0-9]+.[0-9]+' ]
   pull_request:
     branches: [ main, master ]
 
@@ -48,8 +48,8 @@ jobs:
       - name: Upload binary
         uses: actions/upload-artifact@v4
         with:
-          name: fileserver-linux-amd64
-          path: fileserver
+          name: mirra-linux-amd64
+          path: mirra
 
   cross-build:
     name: Cross-compile
@@ -78,16 +78,16 @@ jobs:
         run: |
           GOOS=${{ matrix.platform.os }} GOARCH=${{ matrix.platform.arch }} make build
           if [ "${{ matrix.platform.os }}" = "windows" ]; then
-            mv fileserver fileserver.exe
+            mv mirra mirra.exe
           fi
 
       - name: Upload binary
         uses: actions/upload-artifact@v4
         with:
-          name: fileserver-${{ matrix.platform.os }}-${{ matrix.platform.arch }}
+          name: mirra-${{ matrix.platform.os }}-${{ matrix.platform.arch }}
           path: |
-            fileserver
-            fileserver.exe
+            mirra
+            mirra.exe
 
   release:
     name: Create Release
@@ -117,12 +117,36 @@ jobs:
       - name: Create distribution packages
         run: make dist
 
+      - name: Get release notes from CHANGELOG
+        id: release_notes
+        run: |
+          TAG=${GITHUB_REF#refs/tags/}
+          echo "Extracting release notes for ${TAG}"
+          # Extract notes for this version from CHANGELOG.md
+          awk -v tag="${TAG}" '
+            /^## \[/ {
+              if (p) exit
+              if ($0 ~ "\\[" tag "\\]") { p=1; next }
+            }
+            p { print }
+          ' CHANGELOG.md > release_notes.txt
+
+          # If no notes found, use default message
+          if [ ! -s release_notes.txt ]; then
+            echo "Release ${TAG}" > release_notes.txt
+          fi
+
+          cat release_notes.txt
+
+          echo "notes_file=release_notes.txt" >> $GITHUB_OUTPUT
+
       - name: Create Release
         uses: softprops/action-gh-release@v1
         with:
           files: |
             dist/*.tar.gz
             dist/*.zip
-          generate_release_notes: true
+          body_path: ${{ steps.release_notes.outputs.notes_file }}
+          generate_release_notes: false
           draft: false
           prerelease: false
