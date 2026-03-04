@@ -1,16 +1,18 @@
-name: CI/CD
+name: Release
 
 on:
+  # 手动触发
+  workflow_dispatch:
+  # Push tags 时自动触发
   push:
-    branches: [ main, master ]
-    tags: [ '[0-9]+.[0-9]+.[0-9]+' ]
-  pull_request:
-    branches: [ main, master ]
+    tags:
+      - 'v[0-9]+.[0-9]+.[0-9]+'
 
 jobs:
   test:
     name: Test
     runs-on: ubuntu-latest
+    if: startsWith(github.ref, 'refs/tags/')
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -25,77 +27,11 @@ jobs:
       - name: Run tests
         run: make test
 
-  build:
-    name: Build
-    runs-on: ubuntu-latest
-    needs: test
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-        with:
-          fetch-depth: 0  # Fetch all history for version detection
-
-      - name: Set up Go
-        uses: actions/setup-go@v5
-        with:
-          go-version: '1.25'
-          cache: true
-          cache-dependency-path: go.sum
-
-      - name: Build
-        run: make build
-
-      - name: Upload binary
-        uses: actions/upload-artifact@v4
-        with:
-          name: mirra-linux-amd64
-          path: mirra
-
   cross-build:
     name: Cross-compile
     runs-on: ubuntu-latest
     needs: test
-    strategy:
-      matrix:
-        platform:
-          - { os: linux, arch: amd64 }
-          - { os: linux, arch: arm64 }
-          - { os: darwin, arch: amd64 }
-          - { os: darwin, arch: arm64 }
-          - { os: windows, arch: amd64 }
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-
-      - name: Set up Go
-        uses: actions/setup-go@v5
-        with:
-          go-version: '1.25'
-          cache: true
-          cache-dependency-path: go.sum
-
-      - name: Cross-compile
-        run: |
-          GOOS=${{ matrix.platform.os }} GOARCH=${{ matrix.platform.arch }} make build
-          if [ "${{ matrix.platform.os }}" = "windows" ]; then
-            mv mirra mirra.exe
-          fi
-
-      - name: Upload binary
-        uses: actions/upload-artifact@v4
-        with:
-          name: mirra-${{ matrix.platform.os }}-${{ matrix.platform.arch }}
-          path: |
-            mirra
-            mirra.exe
-
-  release:
-    name: Create Release
-    runs-on: ubuntu-latest
-    needs: [test, cross-build]
-    if: startsWith(github.ref, 'refs/tags/v')
-    permissions:
-      contents: write
+    if: startsWith(github.ref, 'refs/tags/')
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -109,19 +45,41 @@ jobs:
           cache: true
           cache-dependency-path: go.sum
 
-      - name: Download all artifacts
+      - name: Cross-compile for all platforms
+        run: make cross-build
+
+      - name: Upload binaries
+        uses: actions/upload-artifact@v4
+        with:
+          name: mirra-binaries
+          path: dist/mirra_*
+          retention-days: 30
+
+  release:
+    name: Create Release
+    runs-on: ubuntu-latest
+    needs: cross-build
+    if: startsWith(github.ref, 'refs/tags/')
+    permissions:
+      contents: write
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Download binaries
         uses: actions/download-artifact@v4
         with:
-          path: artifacts
-
-      - name: Create distribution packages
-        run: make dist
+          name: mirra-binaries
+          path: dist
 
       - name: Get release notes from CHANGELOG
         id: release_notes
         run: |
-          TAG=${GITHUB_REF#refs/tags/}
+          TAG=${GITHUB_REF#refs/tags/v}
           echo "Extracting release notes for ${TAG}"
+
           # Extract notes for this version from CHANGELOG.md
           awk -v tag="${TAG}" '
             /^## \[/ {
@@ -136,17 +94,18 @@ jobs:
             echo "Release ${TAG}" > release_notes.txt
           fi
 
+          echo "=== Release Notes ==="
           cat release_notes.txt
+          echo "======================"
 
           echo "notes_file=release_notes.txt" >> $GITHUB_OUTPUT
 
       - name: Create Release
         uses: softprops/action-gh-release@v1
         with:
-          files: |
-            dist/*.tar.gz
-            dist/*.zip
+          files: dist/*
           body_path: ${{ steps.release_notes.outputs.notes_file }}
+          tag_name: ${{ github.ref_name }}
           generate_release_notes: false
           draft: false
           prerelease: false
