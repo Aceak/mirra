@@ -1,0 +1,14 @@
+{
+  "server": {
+    "name": "File Server",
+    "host": "0.0.0.0",
+    "port": "8080"
+  },
+  "share": {
+    "root_path": "."
+  },
+  "appearance": {
+    "theme": "auto",
+    "show_hidden": false
+  }
+}

@@ -1,0 +1,34 @@
+# Binary
+fileserver
+
+# Frontend build artifacts
+frontend/dist/
+frontend/node_modules/
+
+# Local config
+config.json
+
+# Claude
+.claude
+
+# Editor files
+.vscode/
+.idea/
+*.swp
+*.swo
+.DS_Store
+
+# Logs
+*.log
+
+# Go
+coverage.out
+coverage.html
+dist/
+fileserver-*
+fileserver.exe
+*.exe
+
+devguide.md
+
+testdir
