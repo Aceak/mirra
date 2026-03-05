@@ -1,22 +1,19 @@
 # Mirra
 
-A simple file server with web UI, similar to university mirror sites. Built with Go using server-side rendering.
+A lightweight file server with a modern web UI. Built with Go using server-side rendering.
+
+<div align="center">
+
+**[English](README.md)** | **[中文](README_zh.md)**
+
+</div>
 
 ## Features
 
-- Single binary deployment
-- Configurable listening address and root directory
-- Web UI with GitHub-style light/dark themes
-- Theme toggle button (follows system preference by default)
-- Server-side rendered directory listing
-- README.md rendering (like GitHub)
-- Statistics (directories, files, total size)
-- Breadcrumb navigation
-- File list with sorting (name, size, modified time)
-- Real-time search filtering
-- SPA-style navigation (no-refresh directory switching)
-- Code block syntax highlighting (Prism.js)
-- Responsive design with mobile support
+- Single binary deployment, no external dependencies
+- Web UI with light/dark theme support
+- Directory browsing with real-time search
+- README.md rendering with syntax highlighting
 
 ## Configuration
 
@@ -57,13 +54,7 @@ Edit `config.json`:
 - `appearance.theme`: Default theme (`light`, `dark`, or `auto` for system preference)
 - `appearance.show_hidden`: Whether to show hidden files (starting with `.`)
 
-## Building and Running
-
-### Prerequisites
-
-- Go 1.25 or later
-
-### Usage
+## Usage
 
 ```bash
 # Run with default config file (config.json)
@@ -74,6 +65,20 @@ Edit `config.json`:
 
 # Show version information
 ./mirra -v
+```
+
+## Building from Source
+
+### Prerequisites
+
+- Go 1.25 or later
+
+```bash
+# Build Go binary
+go build -o mirra ./cmd/server
+
+# Run
+./mirra
 ```
 
 ### Using Makefile
@@ -101,130 +106,36 @@ make lint
 make clean
 ```
 
-### Manual Build
+## Changelog
 
-```bash
-# Build Go binary
-go build -o mirra ./cmd/server
+### v0.0.2 (2026-03-05)
 
-# Run
-./mirra
-```
+**Added**
+- Added `-c` flag to specify custom config file path
+- Added Prism.js syntax highlighting support for 30+ programming languages
 
-## Project Structure
+**Changed**
+- Changed all code comments and user-facing messages to English
+- Optimized page title display logic (removed redundant server name element)
+- Improved theme switching to preserve Prism.js highlighting effect
 
-```
-.
-├── cmd/
-│   └── server/
-│       ├── main.go           # Main entry point
-│       └── static/
-│           ├── template.html # HTML template with embedded CSS/JS
-│           ├── css/          # Stylesheets
-│           ├── js/           # JavaScript files
-│           └── webfonts/     # FontAwesome fonts
-├── internal/
-│   ├── config/               # Configuration handling
-│   ├── handlers/             # HTTP handlers
-│   ├── types/                # Type definitions
-│   ├── utils/                # Utility functions
-│   └── version/              # Version information
-├── config.json               # Configuration file
-├── config.example.json       # Example configuration
-├── Makefile                  # Build scripts
-└── go.mod                    # Go module definition
-```
+For earlier versions, see [CHANGELOG.md](CHANGELOG.md).
 
-## Architecture
+## TODO
 
-The server uses Go's `html/template` for server-side rendering. All HTML, CSS, and JavaScript are embedded in the binary via `go:embed`.
+### Completed
+- [x] File server with directory browsing
+- [x] Light/dark theme support
+- [x] README.md rendering
+- [x] Real-time search
+- [x] Syntax highlighting for code blocks
 
-### Key Components
-
-- `cmd/server/main.go` - Main server logic with directory handling
-- `cmd/server/static/template.html` - HTML template with embedded CSS and JavaScript
-- `internal/config/config.go` - Configuration loading and management
-- `internal/handlers/handlers.go` - HTTP request handlers
-- `internal/utils/utils.go` - Utility functions (size formatting, etc.)
-
-### Theme System
-
-The UI supports light and dark themes based on CSS custom properties. The theme defaults to system preference, but can be overridden by:
-1. User toggle (saved in localStorage)
-2. Server configuration (`appearance.theme` in `config.json`)
-
-Supported theme values: `light`, `dark`, or `auto` (follows system preference).
-
-## Cross-Compilation
-
-The Makefile supports cross-compilation for multiple platforms:
-
-```bash
-# Build for all supported platforms
-make cross-build
-
-# Output files will be in dist/ directory:
-# - mirra_linux_amd64
-# - mirra_linux_arm64
-# - mirra_mac_amd64
-# - mirra_mac_arm64
-# - mirra_windows_amd64.exe
-```
-
-Supported platforms:
-- Linux (amd64, arm64, 386, arm, riscv64)
-- macOS (amd64, arm64)
-- Windows (amd64, arm64, 386, arm)
-
-## Release Script
-
-Use `release.sh` to manage version tags:
-
-```bash
-# Show current version and create tag
-./release.sh
-
-# Bump major version (1.0.0 -> 2.0.0)
-./release.sh --major
-
-# Bump minor version (1.0.0 -> 1.1.0)
-./release.sh --minor
-
-# Bump patch version (1.0.0 -> 1.0.1)
-./release.sh --patch
-
-# Only create tag without bumping version
-./release.sh --tag-only
-
-# Delete current version tag (local and remote)
-./release.sh --revert
-```
-
-After creating a tag, push it to trigger the GitHub Actions release workflow.
-
-## GitHub Actions
-
-The Release workflow is configured in `.github/workflows/build.yml`:
-
-- **Lint**: Code formatting check
-- **Cross-compile**: Build for all supported platforms
-- **Release**: Create GitHub release with binaries
-
-The workflow triggers automatically when a version tag (e.g., `v0.0.1`) is pushed.
-
-## Development
-
-```bash
-# Install dependencies
-make deps
-
-# Format code
-make fmt
-
-# Run with hot reload (using air or similar)
-go run ./cmd/server
-```
+### Planned
+- [ ] Mobile WebUI improvements
+- [ ] Code preview feature
+- [ ] File URL copy and folder download
+- [ ] Multi-threaded download support
 
 ## License
 
-MIT
+MIT License - see [LICENSE](LICENSE) for details.
