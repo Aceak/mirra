@@ -216,7 +216,6 @@ function initCodeBlocks() {
 function initSPANavigation() {
     const breadcrumbsNav = document.querySelector('.breadcrumbs');
     const statsDiv = document.querySelector('.stats');
-    const serverNameEl = document.querySelector('.server-name');
 
     // 处理目录链接点击（包括 .. 和面包屑）
     document.addEventListener('click', function(e) {
@@ -248,11 +247,8 @@ function initSPANavigation() {
                 const newTitle = doc.querySelector('title').textContent;
                 document.title = newTitle;
 
-                // 更新服务器名称（子目录时显示目录名，即 pageTitle）
-                // pageTitle 在 template.html 中同时用于 <title> 标签
-                if (serverNameEl) {
-                    serverNameEl.textContent = newTitle;
-                }
+                // 注意：Server-Name 是固定的服务器名称，不应该随目录变化
+                // 只有标签页标题（document.title）会显示当前目录名
 
                 // 更新面包屑
                 const newBreadcrumbs = doc.querySelector('.breadcrumbs').innerHTML;
@@ -293,7 +289,6 @@ function initSPANavigation() {
                     } else {
                         // 获取新的文件列表位置（如果刚被替换）
                         const currentFileTable = document.querySelector('.file-table');
-                        const currentEmptyDiv = document.querySelector('.empty-directory');
                         if (currentFileTable) {
                             // 当前页面没有 README，把新的 README 插入到文件列表后面
                             currentFileTable.insertAdjacentElement('afterend', newReadme.cloneNode(true));
