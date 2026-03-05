@@ -13,6 +13,37 @@
     <script src="/static/js/prism-autoloader.min.js" data-autoloader-path="/static/js/components/"></script>
     <script>document.title="{{.PageTitle}}";</script>
     <script src="/static/js/main.js"></script>
+    <script>
+    // Code block copy functionality
+    function copyCode(button) {
+        const wrapper = button.parentElement;
+        const code = wrapper.querySelector('code');
+        const text = code.textContent;
+
+        navigator.clipboard.writeText(text).then(function() {
+            button.textContent = 'Copied!';
+            button.classList.add('copied');
+            setTimeout(function() {
+                button.textContent = 'Copy';
+                button.classList.remove('copied');
+            }, 2000);
+        }).catch(function() {
+            // Fallback for older browsers
+            const textarea = document.createElement('textarea');
+            textarea.value = text;
+            document.body.appendChild(textarea);
+            textarea.select();
+            document.execCommand('copy');
+            document.body.removeChild(textarea);
+            button.textContent = 'Copied!';
+            button.classList.add('copied');
+            setTimeout(function() {
+                button.textContent = 'Copy';
+                button.classList.remove('copied');
+            }, 2000);
+        });
+    }
+    </script>
 </head>
 
 <body>
