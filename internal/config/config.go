@@ -6,14 +6,14 @@ import (
 	"os"
 )
 
-// Config 配置结构
+// Config configuration structure
 type Config struct {
 	Server     ServerConfig     `json:"server"`
 	Share      ShareConfig      `json:"share"`
 	Appearance AppearanceConfig `json:"appearance"`
 }
 
-// ServerConfig 服务器配置
+// ServerConfig server configuration
 type ServerConfig struct {
 	Name    string `json:"name"`
 	Host    string `json:"host"`
@@ -21,12 +21,12 @@ type ServerConfig struct {
 	Favicon string `json:"favicon"`
 }
 
-// ShareConfig 共享配置
+// ShareConfig share configuration
 type ShareConfig struct {
 	RootPath string `json:"root_path"`
 }
 
-// AppearanceConfig 外观配置
+// AppearanceConfig appearance configuration
 type AppearanceConfig struct {
 	Theme      string `json:"theme"`
 	ShowHidden bool   `json:"show_hidden"`
@@ -34,13 +34,14 @@ type AppearanceConfig struct {
 
 var config Config
 
-// LoadConfig 加载配置文件并返回 Config 实例
-func LoadConfig() (*Config, error) {
-	// 如果配置文件不存在，创建默认配置
-	if _, err := os.Stat("config.json"); os.IsNotExist(err) {
+// LoadConfig loads configuration file and returns Config instance
+// configPath: path to config file, defaults to config.json
+func LoadConfig(configPath string) (*Config, error) {
+	// If config file does not exist, create default configuration
+	if _, err := os.Stat(configPath); os.IsNotExist(err) {
 		fmt.Println("config.json not found, creating default configuration...")
 
-		// 获取当前工作目录作为默认根目录
+		// Get current working directory as default root path
 		cwd, err := os.Getwd()
 		if err != nil {
 			cwd = "."
@@ -62,8 +63,8 @@ func LoadConfig() (*Config, error) {
 			},
 		}
 
-		// 写入默认配置
-		file, err := os.Create("config.json")
+		// Write default configuration
+		file, err := os.Create(configPath)
 		if err != nil {
 			return nil, fmt.Errorf("failed to create config.json: %v", err)
 		}
@@ -77,8 +78,8 @@ func LoadConfig() (*Config, error) {
 
 		fmt.Printf("Default config.json created with root path: %s\n", cwd)
 
-		// 重新打开文件进行读取
-		file, err = os.Open("config.json")
+		// Reopen file for reading
+		file, err = os.Open(configPath)
 		if err != nil {
 			return nil, err
 		}
@@ -91,8 +92,8 @@ func LoadConfig() (*Config, error) {
 		return &config, nil
 	}
 
-	// 配置文件存在，正常加载
-	file, err := os.Open("config.json")
+	// Config file exists, load normally
+	file, err := os.Open(configPath)
 	if err != nil {
 		return nil, err
 	}

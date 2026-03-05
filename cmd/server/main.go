@@ -16,43 +16,44 @@ import (
 var StaticFS embed.FS
 
 func main() {
-	// 命令行参数解析
-	showVersion := flag.Bool("v", false, "显示版本信息")
+	// Parse command line arguments
+	showVersion := flag.Bool("v", false, "Show version information")
+	configPath := flag.String("c", "config.json", "Specify config file path")
 	flag.Parse()
 
-	// 加载配置文件
-	cfg, cfgErr := config.LoadConfig()
+	// Load configuration
+	cfg, cfgErr := config.LoadConfig(*configPath)
 	if cfgErr != nil {
 		fmt.Printf("Error loading config: %v\n", cfgErr)
 		return
 	}
 
-	// 如果指定了 -v 参数，显示版本信息并退出
+	// Show version information if -v flag is set
 	if *showVersion {
 		fmt.Printf("%s\n", version.FormatVersion())
 		return
 	}
 
-	// 初始化模板
+	// Initialize template
 	tmpl, tmplErr := handlers.InitTemplate(StaticFS)
 	if tmplErr != nil {
 		fmt.Printf("Error initializing template: %v\n", tmplErr)
 		return
 	}
 
-	// 设置静态文件服务（使用嵌入的文件系统）
-	// 创建static子目录的文件系统
+	// Setup static file server (using embedded filesystem)
+	// Create static subdirectory filesystem
 	staticSubFS, subErr := fs.Sub(StaticFS, "static")
 	if subErr != nil {
 		fmt.Printf("Error creating static sub filesystem: %v\n", subErr)
 		return
 	}
 
-	// 创建静态文件服务器
+	// Create static file server
 	staticHandler := http.FileServer(http.FS(staticSubFS))
 	http.Handle("/static/", http.StripPrefix("/static/", staticHandler))
 
-	// 设置路由
+	// Setup routes
 	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
 		handlers.HandleRequest(w, r, cfg, tmpl)
 	})

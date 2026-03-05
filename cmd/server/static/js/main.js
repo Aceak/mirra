@@ -206,9 +206,12 @@ function initCodeBlocks() {
             }
         });
     });
-    // 手动触发 prism 高亮
+    // 手动触发 prism 高亮（在 SPA 导航后重新加载的语言组件可能需要重新高亮）
     if (window.Prism) {
-        setTimeout(function() { Prism.highlightAll(); }, 100);
+        // 等待语言组件加载完成
+        setTimeout(function() {
+            Prism.highlightAll();
+        }, 50);
     }
 }
 
@@ -331,6 +334,13 @@ function rebindEvents() {
     initSort();
     initSearch();
     initCodeBlocks();
+    // SPA 导航后，触发 Prism 重新高亮所有代码块
+    if (window.Prism) {
+        // 使用 requestAnimationFrame 确保 DOM 更新后再高亮
+        requestAnimationFrame(function() {
+            Prism.highlightAll();
+        });
+    }
 }
 
 // 页面加载完成后初始化

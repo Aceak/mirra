@@ -31,112 +31,122 @@ html.light-theme-initial body {
 }
 
 /* 代码块行内元素样式 - 暗色主题（GitHub Dark 风格） */
-.readme-content pre[class*="language-"] code .token.comment,
-.readme-content pre[class*="language-"] code .token.prolog,
-.readme-content pre[class*="language-"] code .token.doctype,
-.readme-content pre[class*="language-"] code .token.cdata {
+.readme-content pre code[class*="language-"],
+.readme-content pre[class*="language-"] code {
+    color: #e6edf3;
+}
+
+.readme-content pre code[class*="language-"] .token.comment,
+.readme-content pre code[class*="language-"] .token.prolog,
+.readme-content pre code[class*="language-"] .token.doctype,
+.readme-content pre code[class*="language-"] .token.cdata {
     color: #8b949e !important;
 }
 
-.readme-content pre[class*="language-"] code .token.punctuation {
+.readme-content pre code[class*="language-"] .token.punctuation {
     color: #8b949e !important;
 }
 
-.readme-content pre[class*="language-"] code .token.property,
-.readme-content pre[class*="language-"] code .token.tag,
-.readme-content pre[class*="language-"] code .token.boolean,
-.readme-content pre[class*="language-"] code .token.number,
-.readme-content pre[class*="language-"] code .token.constant,
-.readme-content pre[class*="language-"] code .token.symbol,
-.readme-content pre[class*="language-"] code .token.deleted {
+.readme-content pre code[class*="language-"] .token.property,
+.readme-content pre code[class*="language-"] .token.tag,
+.readme-content pre code[class*="language-"] .token.boolean,
+.readme-content pre code[class*="language-"] .token.number,
+.readme-content pre code[class*="language-"] .token.constant,
+.readme-content pre code[class*="language-"] .token.symbol,
+.readme-content pre code[class*="language-"] .token.deleted {
     color: #79c0ff !important;
 }
 
-.readme-content pre[class*="language-"] code .token.selector,
-.readme-content pre[class*="language-"] code .token.attr-name,
-.readme-content pre[class*="language-"] code .token.string,
-.readme-content pre[class*="language-"] code .token.char,
-.readme-content pre[class*="language-"] code .token.builtin,
-.readme-content pre[class*="language-"] code .token.inserted {
+.readme-content pre code[class*="language-"] .token.selector,
+.readme-content pre code[class*="language-"] .token.attr-name,
+.readme-content pre code[class*="language-"] .token.string,
+.readme-content pre code[class*="language-"] .token.char,
+.readme-content pre code[class*="language-"] .token.builtin,
+.readme-content pre code[class*="language-"] .token.inserted {
     color: #a5d6ff !important;
 }
 
-.readme-content pre[class*="language-"] code .token.operator,
-.readme-content pre[class*="language-"] code .token.entity,
-.readme-content pre[class*="language-"] code .token.url,
-.readme-content pre[class*="language-"] code.language-css .token.string {
+.readme-content pre code[class*="language-"] .token.operator,
+.readme-content pre code[class*="language-"] .token.entity,
+.readme-content pre code[class*="language-"] .token.url,
+.readme-content pre code[class*="language-"].language-css .token.string {
     color: #79c0ff !important;
 }
 
-.readme-content pre[class*="language-"] code .token.atrule,
-.readme-content pre[class*="language-"] code .token.attr-value,
-.readme-content pre[class*="language-"] code .token.keyword {
+.readme-content pre code[class*="language-"] .token.atrule,
+.readme-content pre code[class*="language-"] .token.attr-value,
+.readme-content pre code[class*="language-"] .token.keyword {
     color: #ff7b72 !important;
 }
 
-.readme-content pre[class*="language-"] code .token.function,
-.readme-content pre[class*="language-"] code .token.class-name {
+.readme-content pre code[class*="language-"] .token.function,
+.readme-content pre code[class*="language-"] .token.class-name {
     color: #d2a8ff !important;
 }
 
-.readme-content pre[class*="language-"] code .token.regex,
-.readme-content pre[class*="language-"] code .token.important,
-.readme-content pre[class*="language-"] code .token.variable {
+.readme-content pre code[class*="language-"] .token.regex,
+.readme-content pre code[class*="language-"] .token.important,
+.readme-content pre code[class*="language-"] .token.variable {
     color: #ffa657 !important;
 }
 
 /* 亮色主题下的代码高亮颜色（GitHub Light 风格） */
-html.light-theme .readme-content pre[class*="language-"] code .token.comment,
-html.light-theme .readme-content pre[class*="language-"] code .token.prolog,
-html.light-theme .readme-content pre[class*="language-"] code .token.doctype,
-html.light-theme .readme-content pre[class*="language-"] code .token.cdata {
+html.light-theme .readme-content pre code[class*="language-"],
+html.light-theme .readme-content pre[class*="language-"] code {
+    color: #24292f;
+}
+
+html.light-theme .readme-content pre code[class*="language-"] .token.comment,
+html.light-theme .readme-content pre code[class*="language-"] .token.prolog,
+html.light-theme .readme-content pre code[class*="language-"] .token.doctype,
+html.light-theme .readme-content pre code[class*="language-"] .token.cdata {
     color: #6e7781 !important;
 }
 
-html.light-theme .readme-content pre[class*="language-"] code .token.punctuation {
+html.light-theme .readme-content pre code[class*="language-"] .token.punctuation {
     color: #6e7781 !important;
 }
 
-html.light-theme .readme-content pre[class*="language-"] code .token.property,
-html.light-theme .readme-content pre[class*="language-"] code .token.tag,
-html.light-theme .readme-content pre[class*="language-"] code .token.boolean,
-html.light-theme .readme-content pre[class*="language-"] code .token.number,
-html.light-theme .readme-content pre[class*="language-"] code .token.constant,
-html.light-theme .readme-content pre[class*="language-"] code .token.symbol,
-html.light-theme .readme-content pre[class*="language-"] code .token.deleted {
+html.light-theme .readme-content pre code[class*="language-"] .token.property,
+html.light-theme .readme-content pre code[class*="language-"] .token.tag,
+html.light-theme .readme-content pre code[class*="language-"] .token.boolean,
+html.light-theme .readme-content pre code[class*="language-"] .token.number,
+html.light-theme .readme-content pre code[class*="language-"] .token.constant,
+html.light-theme .readme-content pre code[class*="language-"] .token.symbol,
+html.light-theme .readme-content pre code[class*="language-"] .token.deleted {
     color: #0550ae !important;
 }
 
-html.light-theme .readme-content pre[class*="language-"] code .token.selector,
-html.light-theme .readme-content pre[class*="language-"] code .token.attr-name,
-html.light-theme .readme-content pre[class*="language-"] code .token.string,
-html.light-theme .readme-content pre[class*="language-"] code .token.char,
-html.light-theme .readme-content pre[class*="language-"] code .token.builtin,
-html.light-theme .readme-content pre[class*="language-"] code .token.inserted {
+html.light-theme .readme-content pre code[class*="language-"] .token.selector,
+html.light-theme .readme-content pre code[class*="language-"] .token.attr-name,
+html.light-theme .readme-content pre code[class*="language-"] .token.string,
+html.light-theme .readme-content pre code[class*="language-"] .token.char,
+html.light-theme .readme-content pre code[class*="language-"] .token.builtin,
+html.light-theme .readme-content pre code[class*="language-"] .token.inserted {
     color: #0a3069 !important;
 }
 
-html.light-theme .readme-content pre[class*="language-"] code .token.operator,
-html.light-theme .readme-content pre[class*="language-"] code .token.entity,
-html.light-theme .readme-content pre[class*="language-"] code .token.url,
-html.light-theme .readme-content pre[class*="language-"] code.language-css .token.string {
+html.light-theme .readme-content pre code[class*="language-"] .token.operator,
+html.light-theme .readme-content pre code[class*="language-"] .token.entity,
+html.light-theme .readme-content pre code[class*="language-"] .token.url,
+html.light-theme .readme-content pre code[class*="language-"].language-css .token.string {
     color: #0550ae !important;
 }
 
-html.light-theme .readme-content pre[class*="language-"] code .token.atrule,
-html.light-theme .readme-content pre[class*="language-"] code .token.attr-value,
-html.light-theme .readme-content pre[class*="language-"] code .token.keyword {
+html.light-theme .readme-content pre code[class*="language-"] .token.atrule,
+html.light-theme .readme-content pre code[class*="language-"] .token.attr-value,
+html.light-theme .readme-content pre code[class*="language-"] .token.keyword {
     color: #cf222e !important;
 }
 
-html.light-theme .readme-content pre[class*="language-"] code .token.function,
-html.light-theme .readme-content pre[class*="language-"] code .token.class-name {
+html.light-theme .readme-content pre code[class*="language-"] .token.function,
+html.light-theme .readme-content pre code[class*="language-"] .token.class-name {
     color: #8250df !important;
 }
 
-html.light-theme .readme-content pre[class*="language-"] code .token.regex,
-html.light-theme .readme-content pre[class*="language-"] code .token.important,
-html.light-theme .readme-content pre[class*="language-"] code .token.variable {
+html.light-theme .readme-content pre code[class*="language-"] .token.regex,
+html.light-theme .readme-content pre code[class*="language-"] .token.important,
+html.light-theme .readme-content pre code[class*="language-"] .token.variable {
     color: #953800 !important;
 }
 
