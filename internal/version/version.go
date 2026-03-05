@@ -1,7 +1,7 @@
 package version
 
 // BaseVersion 基础版本号
-const BaseVersion = "0.0.1"
+const BaseVersion = "0.0.2"
 
 // CommitHash 提交哈希，由构建时注入
 var CommitHash = "unknown"

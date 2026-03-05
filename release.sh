@@ -176,7 +176,7 @@ if [[ -f "$CHANGELOG_FILE" ]]; then
     RELEASE_NOTES=$(awk -v tag="${NEW_VERSION}" '
         /^## \[/ {
             if (p) exit
-            if ($0 ~ "\\[" tag "\\]") { p=1; next }
+            if (index($0, "[" tag "]")) p=1
         }
         p { print }
     ' "$CHANGELOG_FILE")

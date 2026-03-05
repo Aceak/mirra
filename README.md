@@ -63,6 +63,19 @@ Edit `config.json`:
 
 - Go 1.25 or later
 
+### Usage
+
+```bash
+# Run with default config file (config.json)
+./mirra
+
+# Run with custom config file path
+./mirra -c /path/to/config.json
+
+# Show version information
+./mirra -v
+```
+
 ### Using Makefile
 
 ```bash
