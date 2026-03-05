@@ -108,6 +108,13 @@ make clean
 
 ## Changelog
 
+### v0.0.3 (2026-03-05)
+
+**Fixed**
+- Fixed code block Copy button font to use monospace font
+- Fixed Copy button layout issue that caused code to shift down
+- Fixed Clipboard API fallback for better browser compatibility
+
 ### v0.0.2 (2026-03-05)
 
 **Added**
