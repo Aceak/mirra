@@ -5,6 +5,7 @@ import (
 	"html"
 	"io"
 	"path/filepath"
+	"regexp"
 	"strings"
 
 	markdownhtml "github.com/gomarkdown/markdown/html"
@@ -13,20 +14,56 @@ import (
 	"github.com/gomarkdown/markdown/parser"
 )
 
+// HTML 块内的 Markdown 链接正则
+var inlineMarkdownRegex = regexp.MustCompile(`\[(.*?)\]\((.*?)\)`)
+
 // RenderMarkdown 将 Markdown 内容渲染为 HTML
 func RenderMarkdown(content []byte) string {
-	extensions := parser.CommonExtensions | parser.AutoHeadingIDs
+	// 预处理：将 HTML 块内的 Markdown 链接转换为 HTML
+	content = convertInlineMarkdown(content)
+
+	extensions := parser.CommonExtensions | parser.AutoHeadingIDs | parser.NoIntraEmphasis
 	p := parser.NewWithExtensions(extensions)
 	doc := p.Parse(content)
 
-	htmlFlags := markdownhtml.CommonFlags | markdownhtml.HrefTargetBlank
+	htmlFlags := markdownhtml.CommonFlags | markdownhtml.HrefTargetBlank | markdownhtml.Smartypants
 	opts := markdownhtml.RendererOptions{
-		Flags: htmlFlags,
+		Flags:          htmlFlags,
 		RenderNodeHook: renderCodeBlock,
 	}
 	renderer := markdownhtml.NewRenderer(opts)
 
 	return string(markdown.Render(doc, renderer))
+}
+
+// convertInlineMarkdown 将 HTML 块内的 Markdown 链接转换为 HTML
+func convertInlineMarkdown(content []byte) []byte {
+	// 匹配 <div ...>...</div> 内的内容
+	divRegex := regexp.MustCompile(`(<div[^>]*>)([\s\S]*?)(</div>)`)
+
+	return divRegex.ReplaceAllFunc(content, func(match []byte) []byte {
+		// 提取开始标签、内容和结束标签
+		parts := divRegex.FindSubmatch(match)
+		if len(parts) != 4 {
+			return match
+		}
+
+		openTag := parts[1]
+		innerContent := parts[2]
+		closeTag := parts[3]
+
+		// 将内部的 Markdown 链接 [text](url) 转换为 HTML
+		converted := inlineMarkdownRegex.ReplaceAll(innerContent, []byte(`<a href="$2">$1</a>`))
+
+		// 处理粗体 **text**
+		boldRegex := regexp.MustCompile(`\*\*(.*?)\*\*`)
+		converted = boldRegex.ReplaceAll(converted, []byte(`<strong>$1</strong>`))
+
+		result := append([]byte{}, openTag...)
+		result = append(result, converted...)
+		result = append(result, closeTag...)
+		return result
+	})
 }
 
 // renderCodeBlock 渲染代码块，添加语言类名供 prism.js 高亮
@@ -36,24 +73,26 @@ func renderCodeBlock(w io.Writer, node ast.Node, entering bool) (ast.WalkStatus,
 		return ast.WalkStatus(0), false
 	}
 
-	if entering {
-		var lang string
-		if codeBlock.Info != nil {
-			lang = strings.TrimSpace(string(codeBlock.Info))
-		}
-		if lang == "" {
-			lang = "plaintext"
-		}
-
-		// 写入 pre 标签，code 标签添加 language-前缀供 prism.js 使用
-		// Prism.js 标准格式：<pre><code class="language-xxx">
-		fmt.Fprintf(w, "<pre><code class=\"language-%s\">", lang)
-
-		// 转义并写入代码内容
-		escaped := html.EscapeString(string(codeBlock.Literal))
-		w.Write([]byte(escaped))
-		fmt.Fprint(w, "</code></pre>")
+	if !entering {
+		return ast.SkipChildren, true
 	}
+
+	var lang string
+	if codeBlock.Info != nil {
+		lang = strings.TrimSpace(string(codeBlock.Info))
+	}
+	if lang == "" {
+		lang = "plaintext"
+	}
+
+	// 写入 pre 标签，code 标签添加 language-前缀供 prism.js 使用
+	// Prism.js 标准格式：<pre><code class="language-xxx">
+	fmt.Fprintf(w, "<pre><code class=\"language-%s\">", lang)
+
+	// 转义并写入代码内容
+	escaped := html.EscapeString(string(codeBlock.Literal))
+	w.Write([]byte(escaped))
+	fmt.Fprint(w, "</code></pre>")
 
 	return ast.SkipChildren, true
 }

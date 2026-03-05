@@ -558,7 +558,6 @@ th.file-modified {
     overflow-x: auto;
     margin-bottom: 16px;
     position: relative;
-    padding-top: 36px;
 }
 
 .readme-content pre code {
@@ -567,15 +566,18 @@ th.file-modified {
     font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace;
     font-size: 13px;
     line-height: 1.5;
+    display: block;
+    white-space: pre;
 }
 
 /* 代码块复制按钮 */
 .code-copy-btn {
     position: absolute;
-    top: 8px;
-    right: 8px;
+    top: 6px;
+    right: 6px;
     padding: 4px 8px;
     font-size: 12px;
+    font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace;
     background-color: var(--bg-secondary);
     color: var(--text-primary);
     border: 1px solid var(--border);
@@ -583,6 +585,8 @@ th.file-modified {
     cursor: pointer;
     transition: all 0.2s ease;
     z-index: 10;
+    line-height: 1;
+    height: auto;
 }
 
 .code-copy-btn:hover {

@@ -187,22 +187,24 @@ function initCodeBlocks() {
             button = document.createElement('button');
             button.className = 'code-copy-btn';
             button.textContent = 'Copy';
-            pre.insertBefore(button, pre.firstChild);
+            pre.appendChild(button);
         }
         button.addEventListener('click', function() {
             const code = pre.querySelector('code');
-            if (code) {
-                navigator.clipboard.writeText(code.textContent.replace(/\n$/, '')).then(function() {
-                    button.textContent = 'Copied!';
-                    button.classList.add('copied');
-                    setTimeout(function() {
-                        button.textContent = 'Copy';
-                        button.classList.remove('copied');
-                    }, 2000);
+            if (!code) return;
+
+            // 获取代码文本内容
+            const text = code.textContent.replace(/\n$/, '');
+
+            // 使用 clipboard API 复制
+            if (navigator.clipboard && navigator.clipboard.writeText) {
+                navigator.clipboard.writeText(text).then(function() {
+                    showCopiedFeedback(button);
                 }).catch(function() {
-                    button.textContent = 'Failed';
-                    setTimeout(function() { button.textContent = 'Copy'; }, 2000);
+                    fallbackCopy(text, button);
                 });
+            } else {
+                fallbackCopy(text, button);
             }
         });
     });
@@ -212,6 +214,52 @@ function initCodeBlocks() {
         setTimeout(function() {
             Prism.highlightAll();
         }, 50);
+    }
+}
+
+// 复制成功后的反馈
+function showCopiedFeedback(button) {
+    button.textContent = 'Copied!';
+    button.classList.add('copied');
+    setTimeout(function() {
+        button.textContent = 'Copy';
+        button.classList.remove('copied');
+    }, 2000);
+}
+
+// 备用复制方案（使用 execCommand）
+function fallbackCopy(text, button) {
+    const textArea = document.createElement('textarea');
+    textArea.value = text;
+    textArea.style.position = 'fixed';
+    textArea.style.top = '0';
+    textArea.style.left = '0';
+    textArea.style.width = '2em';
+    textArea.style.height = '2em';
+    textArea.style.padding = '0';
+    textArea.style.border = 'none';
+    textArea.style.outline = 'none';
+    textArea.style.boxShadow = 'none';
+    textArea.style.background = 'transparent';
+    textArea.style.opacity = '0';
+    document.body.appendChild(textArea);
+    textArea.focus();
+    textArea.select();
+
+    let success = false;
+    try {
+        success = document.execCommand('copy');
+    } catch (err) {
+        success = false;
+    }
+
+    document.body.removeChild(textArea);
+
+    if (success) {
+        showCopiedFeedback(button);
+    } else {
+        button.textContent = 'Failed';
+        setTimeout(function() { button.textContent = 'Copy'; }, 2000);
     }
 }
 
