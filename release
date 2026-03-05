@@ -75,27 +75,11 @@ if [[ ! -f "$VERSION_FILE" ]]; then
     exit 1
 fi
 
-# 检查是否有未提交的变更（除非使用 --force）
-if [[ "$FORCE" != true ]]; then
-    if ! git diff --quiet || ! git diff --cached --quiet; then
-        echo "Error: You have uncommitted changes. Please commit or stash them before creating a tag."
-        echo ""
-        echo "Unstaged changes:"
-        git diff --stat || true
-        echo ""
-        echo "Staged changes:"
-        git diff --cached --stat || true
-        echo ""
-        echo "Use --force to skip this check"
-        exit 1
-    fi
-fi
-
 # 提取当前版本号
 CURRENT_VERSION=$(grep 'const BaseVersion' "$VERSION_FILE" | cut -d'"' -f2)
 echo "Current version: ${CURRENT_VERSION}"
 
-# --revert: 删除当前版本的 tag
+# --revert: 删除当前版本的 tag（不需要检查未提交变更）
 if [[ "$REVERT_TAG" == true ]]; then
     NEW_TAG="v${CURRENT_VERSION}"
     echo "Reverting tag: ${NEW_TAG}"
@@ -121,6 +105,22 @@ if [[ "$REVERT_TAG" == true ]]; then
     echo ""
     echo "Done! Tag ${NEW_TAG} has been reverted"
     exit 0
+fi
+
+# 检查是否有未提交的变更（除非使用 --force）
+if [[ "$FORCE" != true ]]; then
+    if ! git diff --quiet || ! git diff --cached --quiet; then
+        echo "Error: You have uncommitted changes. Please commit or stash them before creating a tag."
+        echo ""
+        echo "Unstaged changes:"
+        git diff --stat || true
+        echo ""
+        echo "Staged changes:"
+        git diff --cached --stat || true
+        echo ""
+        echo "Use --force to skip this check"
+        exit 1
+    fi
 fi
 
 # 确定新版本号
