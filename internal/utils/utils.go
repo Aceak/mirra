@@ -45,8 +45,9 @@ func renderCodeBlock(w io.Writer, node ast.Node, entering bool) (ast.WalkStatus,
 			lang = "plaintext"
 		}
 
-		// 写入 pre 标签，添加 language-前缀供 prism.js 使用
-		fmt.Fprintf(w, "<pre class=\"language-%s\"><code class=\"language-%s\">", lang, lang)
+		// 写入 pre 标签，code 标签添加 language-前缀供 prism.js 使用
+		// Prism.js 标准格式：<pre><code class="language-xxx">
+		fmt.Fprintf(w, "<pre><code class=\"language-%s\">", lang)
 
 		// 转义并写入代码内容
 		escaped := html.EscapeString(string(codeBlock.Literal))
