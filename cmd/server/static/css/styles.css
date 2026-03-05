@@ -610,6 +610,59 @@ th.file-modified {
     margin-bottom: 4px;
 }
 
+/* 任务列表样式 */
+.readme-content ul:has(.task-list-item),
+.readme-content ol:has(.task-list-item) {
+    list-style-type: none;
+    padding-left: 24px;
+}
+
+.readme-content .task-list-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+    margin-bottom: 4px;
+}
+
+.readme-content .task-list-item input[type="checkbox"] {
+    appearance: none;
+    -webkit-appearance: none;
+    width: 16px;
+    height: 16px;
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    background-color: var(--bg-primary);
+    cursor: not-allowed;
+    margin: 3px 0 0 0;
+    position: relative;
+    flex-shrink: 0;
+}
+
+.readme-content .task-list-item input[type="checkbox"]:checked {
+    background-color: var(--accent);
+}
+
+.readme-content .task-list-item input[type="checkbox"]:checked::after {
+    content: '✓';
+    position: absolute;
+    color: #fff;
+    font-size: 11px;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-weight: bold;
+}
+
+.readme-content .task-list-item.completed {
+    opacity: 0.6;
+    text-decoration: line-through;
+    color: var(--text-secondary);
+}
+
+.readme-content .task-list-item.completed a {
+    color: inherit;
+}
+
 .readme-content a {
     color: var(--accent);
     text-decoration: none;

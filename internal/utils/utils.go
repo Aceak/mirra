@@ -17,10 +17,15 @@ import (
 // HTML 块内的 Markdown 链接正则
 var inlineMarkdownRegex = regexp.MustCompile(`\[(.*?)\]\((.*?)\)`)
 
+// 任务列表正则：匹配 - [ ] 或 - [x] 开头的行
+var taskListRegex = regexp.MustCompile(`(?m)^([ ]*)- \[([ x])\] (.*)$`)
+
 // RenderMarkdown 将 Markdown 内容渲染为 HTML
 func RenderMarkdown(content []byte) string {
 	// 预处理：将 HTML 块内的 Markdown 链接转换为 HTML
 	content = convertInlineMarkdown(content)
+	// 预处理：转换任务列表语法
+	content = convertTaskLists(content)
 
 	extensions := parser.CommonExtensions | parser.AutoHeadingIDs | parser.NoIntraEmphasis
 	p := parser.NewWithExtensions(extensions)
@@ -63,6 +68,45 @@ func convertInlineMarkdown(content []byte) []byte {
 		result = append(result, converted...)
 		result = append(result, closeTag...)
 		return result
+	})
+}
+
+// convertTaskLists 将任务列表语法转换为 HTML
+// - [ ] 转换为未选中复选框
+// - [x] 转换为选中复选框
+func convertTaskLists(content []byte) []byte {
+	return taskListRegex.ReplaceAllFunc(content, func(match []byte) []byte {
+		parts := taskListRegex.FindSubmatch(match)
+		if len(parts) != 4 {
+			return match
+		}
+
+		indent := string(parts[1])
+		checked := string(parts[2])
+		text := string(parts[3])
+
+		var isChecked string
+		var itemClass string
+		if checked == "x" {
+			isChecked = "checked"
+			itemClass = "completed"
+		} else {
+			isChecked = ""
+			itemClass = ""
+		}
+
+		// 计算嵌套层级
+		indentLevel := len(indent) / 2
+		var padding string
+		if indentLevel > 0 {
+			padding = strings.Repeat("  ", indentLevel)
+		}
+
+		// 生成 HTML
+		if itemClass != "" {
+			return []byte(fmt.Sprintf("%s<li class=\"task-list-item %s\"><input type=\"checkbox\" %s disabled>%s</li>", padding, itemClass, isChecked, text))
+		}
+		return []byte(fmt.Sprintf("%s<li class=\"task-list-item\"><input type=\"checkbox\" %s disabled>%s</li>", padding, isChecked, text))
 	})
 }
 
