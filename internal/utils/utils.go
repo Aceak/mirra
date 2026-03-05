@@ -17,8 +17,44 @@ import (
 // HTML 块内的 Markdown 链接正则
 var inlineMarkdownRegex = regexp.MustCompile(`\[(.*?)\]\((.*?)\)`)
 
-// 任务列表正则：匹配 - [ ] 或 - [x] 开头的行
-var taskListRegex = regexp.MustCompile(`(?m)^([ ]*)- \[([ x])\] (.*)$`)
+// convertTaskLists 将任务列表语法转换为 HTML 注释标记
+// 这样 Markdown 解析器会解析列表项内的 Markdown 语法
+func convertTaskLists(content []byte) []byte {
+	// 匹配 - [ ] 或 - [x] 开头的行
+	taskRegex := regexp.MustCompile(`(?m)^([ ]*)- \[([ x])\] `)
+	return taskRegex.ReplaceAllFunc(content, func(match []byte) []byte {
+		parts := taskRegex.FindSubmatch(match)
+		if len(parts) != 3 {
+			return match
+		}
+		indent := parts[1]
+		checked := parts[2]
+		// 使用特殊标记 <!--task: x--> 或 <!--task:  -->
+		if string(checked) == "x" {
+			return []byte(string(indent) + "- <!--task: x--> ")
+		}
+		return []byte(string(indent) + "- <!--task:  --> ")
+	})
+}
+
+// postProcessHTML 在 HTML 渲染后处理任务列表标记
+// 将 <!--task: x--> 替换为复选框，并给父 <li> 添加 task-list-item 类
+func postProcessHTML(htmlContent string) string {
+	// 先将 <!--task: x--> 替换为带有标记的复选框
+	// 标记 <!--task-item:xxx--> 用于后续给 <li> 添加类名
+	htmlContent = strings.ReplaceAll(htmlContent, "<!--task: x-->", `<input type="checkbox" checked disabled class="task-list-checkbox"><!--task-item:completed-->`)
+	htmlContent = strings.ReplaceAll(htmlContent, "<!--task:  -->", `<input type="checkbox" disabled class="task-list-checkbox"><!--task-item:-->`)
+
+	// 使用正则匹配：<li><input...><!--task-item:xxx--> text</li>
+	// 捕获复选框和后续文本，只移除 <!--task-item:xxx--> 标记
+	liCompletedRegex := regexp.MustCompile(`<li>(<input[^>]*>)<!--task-item:completed-->(\s*.*)</li>`)
+	htmlContent = liCompletedRegex.ReplaceAllString(htmlContent, `<li class="task-list-item completed">$1$2</li>`)
+
+	liRegex := regexp.MustCompile(`<li>(<input[^>]*>)<!--task-item:-->(\s*.*)</li>`)
+	htmlContent = liRegex.ReplaceAllString(htmlContent, `<li class="task-list-item">$1$2</li>`)
+
+	return htmlContent
+}
 
 // RenderMarkdown 将 Markdown 内容渲染为 HTML
 func RenderMarkdown(content []byte) string {
@@ -38,7 +74,9 @@ func RenderMarkdown(content []byte) string {
 	}
 	renderer := markdownhtml.NewRenderer(opts)
 
-	return string(markdown.Render(doc, renderer))
+	htmlContent := string(markdown.Render(doc, renderer))
+	// 后处理：替换任务列表标记为复选框
+	return postProcessHTML(htmlContent)
 }
 
 // convertInlineMarkdown 将 HTML 块内的 Markdown 链接转换为 HTML
@@ -68,45 +106,6 @@ func convertInlineMarkdown(content []byte) []byte {
 		result = append(result, converted...)
 		result = append(result, closeTag...)
 		return result
-	})
-}
-
-// convertTaskLists 将任务列表语法转换为 HTML
-// - [ ] 转换为未选中复选框
-// - [x] 转换为选中复选框
-func convertTaskLists(content []byte) []byte {
-	return taskListRegex.ReplaceAllFunc(content, func(match []byte) []byte {
-		parts := taskListRegex.FindSubmatch(match)
-		if len(parts) != 4 {
-			return match
-		}
-
-		indent := string(parts[1])
-		checked := string(parts[2])
-		text := string(parts[3])
-
-		var isChecked string
-		var itemClass string
-		if checked == "x" {
-			isChecked = "checked"
-			itemClass = "completed"
-		} else {
-			isChecked = ""
-			itemClass = ""
-		}
-
-		// 计算嵌套层级
-		indentLevel := len(indent) / 2
-		var padding string
-		if indentLevel > 0 {
-			padding = strings.Repeat("  ", indentLevel)
-		}
-
-		// 生成 HTML
-		if itemClass != "" {
-			return []byte(fmt.Sprintf("%s<li class=\"task-list-item %s\"><input type=\"checkbox\" %s disabled>%s</li>", padding, itemClass, isChecked, text))
-		}
-		return []byte(fmt.Sprintf("%s<li class=\"task-list-item\"><input type=\"checkbox\" %s disabled>%s</li>", padding, isChecked, text))
 	})
 }
 

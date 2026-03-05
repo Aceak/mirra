@@ -624,7 +624,7 @@ th.file-modified {
     margin-bottom: 4px;
 }
 
-.readme-content .task-list-item input[type="checkbox"] {
+.readme-content .task-list-checkbox {
     appearance: none;
     -webkit-appearance: none;
     width: 16px;
@@ -638,11 +638,11 @@ th.file-modified {
     flex-shrink: 0;
 }
 
-.readme-content .task-list-item input[type="checkbox"]:checked {
+.readme-content .task-list-checkbox:checked {
     background-color: var(--accent);
 }
 
-.readme-content .task-list-item input[type="checkbox"]:checked::after {
+.readme-content .task-list-checkbox:checked::after {
     content: '✓';
     position: absolute;
     color: #fff;
